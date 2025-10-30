@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: inventory-mongodb-prod
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password123}
+      MONGO_INITDB_DATABASE: inventory
+    volumes:
+      - mongodb_prod_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - inventory-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Node.js Application
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: inventory-app-prod
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-password123}@mongodb:27017/inventory?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - inventory-network
+    command: npm start
+
+volumes:
+  mongodb_prod_data:
+    driver: local
+
+networks:
+  inventory-network:
+    driver: bridge

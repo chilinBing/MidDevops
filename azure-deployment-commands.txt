@@ -1,0 +1,78 @@
+# Azure Kubernetes Deployment Commands
+# Copy and paste these commands one by one in your terminal
+
+# ========================================
+# STEP 1: Install Azure CLI (if not installed)
+# ========================================
+# Download from: https://aka.ms/installazurecliwindows
+# Or use: winget install -e --id Microsoft.AzureCLI
+
+# ========================================
+# STEP 2: Login to Azure
+# ========================================
+az login
+
+# ========================================
+# STEP 3: Create Resource Group (3 marks)
+# ========================================
+az group create --name inventory-rg --location eastus
+
+# ========================================
+# STEP 4: Create AKS Cluster (3 marks)
+# ========================================
+az aks create --resource-group inventory-rg --name inventory-aks --node-count 2 --node-vm-size Standard_B2s --enable-addons monitoring --generate-ssh-keys
+
+# ========================================
+# STEP 5: Get AKS Credentials
+# ========================================
+az aks get-credentials --resource-group inventory-rg --name inventory-aks
+
+# ========================================
+# STEP 6: Verify Cluster Connection
+# ========================================
+kubectl get nodes
+
+# ========================================
+# STEP 7: Deploy Application (4 marks)
+# ========================================
+# Create namespace
+kubectl create namespace inventory-system
+
+# Deploy MongoDB
+kubectl apply -f k8s/mongodb-deployment.yaml
+
+# Deploy Application from Docker Hub
+kubectl apply -f k8s/app-deployment.yaml
+
+# ========================================
+# STEP 8: Expose Application (3 marks)
+# ========================================
+# Check service status
+kubectl get services -n inventory-system
+
+# Wait for external IP (may take 2-5 minutes)
+kubectl get service inventory-app-service -n inventory-system --watch
+
+# ========================================
+# STEP 9: Test Application
+# ========================================
+# Get external IP
+kubectl get service inventory-app-service -n inventory-system
+
+# Test health endpoint (replace EXTERNAL_IP with actual IP)
+# curl http://EXTERNAL_IP/health
+
+# Test API endpoint
+# curl http://EXTERNAL_IP/api/inventory
+
+# ========================================
+# STEP 10: View All Resources
+# ========================================
+kubectl get all -n inventory-system
+
+# ========================================
+# CLEANUP COMMANDS (when done testing)
+# ========================================
+# kubectl delete namespace inventory-system
+# az aks delete --resource-group inventory-rg --name inventory-aks --yes --no-wait
+# az group delete --name inventory-rg --yes --no-wait
