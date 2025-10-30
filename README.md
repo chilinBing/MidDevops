@@ -67,25 +67,22 @@ kubectl get services -n inventory-system
 ## 📁 Project Structure
 ```
 inventory-management-system/
-├── 📄 README.md                    # This file
+├── 📄 README.md                    # Project documentation
 ├── 📄 package.json                 # Node.js dependencies
 ├── 📄 server.js                    # Express.js backend
 ├── 📄 Dockerfile                   # Container configuration
-├── 📄 docker-compose.yml           # Local Docker setup
+├── 📄 docker-compose.yml           # Local development setup
 ├── 📄 healthcheck.js               # Container health check
 ├── 📁 public/                      # Frontend files
 │   ├── 📄 index.html               # Web interface
-│   ├── 📄 styles.css               # Styling
-│   └── 📄 script.js                # Frontend logic
+│   ├── 📄 styles.css               # Responsive styling
+│   └── 📄 script.js                # Frontend JavaScript
 ├── 📁 k8s/                         # Kubernetes manifests
 │   ├── 📄 namespace.yaml           # K8s namespace
 │   ├── 📄 mongodb-deployment.yaml  # MongoDB deployment
-│   ├── 📄 app-deployment.yaml      # App deployment
-│   └── 📄 ingress.yaml             # Ingress configuration
-├── 📁 mongo-init/                  # Database initialization
-│   └── 📄 init-db.js               # Sample data script
+│   └── 📄 app-deployment.yaml      # Application deployment
 ├── 📁 docs/                        # Documentation
-│   ├── 📄 API.md                   # API documentation
+│   ├── 📄 API.md                   # API reference
 │   └── 📄 DEPLOYMENT.md            # Deployment guide
 └── 📁 .github/workflows/           # CI/CD pipeline
     └── 📄 ci-cd.yml                # GitHub Actions
